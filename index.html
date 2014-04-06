@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Gift Me</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/cover.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="css/carousel.css">
+
+            <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/cover.css" rel="stylesheet">
+    <style type="text/css">
+    #columnH{
+      
+    }
+
+    </style>
+
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript">
+      function getProd()
+      {
+        var parent=document.getElementById("inner");
+        var child=document.getElementById("wrapper");
+        var newdiv=document.getElementById("columnH");
+        var budgetArr=new Array();
+        var sortedArray=new Array();
+        var startIndex=0;
+        //console.log(newdiv);
+
+        //remove the elements added from first call
+        if(document.getElementById("columnH")!=null)
+        {
+        parent.removeChild(child);
+        console.log("removed");
+        }
+
+
+
+        var quantity=document.getElementById("quantity").value;
+        var budget=document.getElementById("budget").value;
+
+        //console.log("quantity is"+quantity);
+        //console.log("budget is"+budget);
+
+        var approxcost=Math.floor(budget/quantity);
+        var pageNumber=1;
+
+        var key="b05dcd698e5ca2eab4a0cd1eee4117e7db2a10c4";
+        var urlJSONP='http://api.zappos.com/Search?&limit=100&callback=?&key=';
+
+
+
+        
+        //var idtoAddto=document.getElementById("inner");
+
+       //REST call
+        $.getJSON(urlJSONP+key,
+          function(data){
+           var sum=new Number(0);
+           
+           var count=0;
+
+           var lengthData=data.results.length;
+
+           //sort the results by price
+           sortedArray=bubbleSort(data.results);
+           //console.log(sortedArray);
+
+
+           //find the start index and travel back
+           startIndex=binarySearch(sortedArray,approxcost);
+           //console.log(startIndex);
+            //products whose price sum is budget
+            for(var i=startIndex;i>0;i--){
+              
+
+              var costprice=sortedArray[i].price;
+              var decimalIndex=costprice.indexOf(".");
+              costprice=costprice.slice(1,decimalIndex);
+              var sum=sum+Number(costprice);
+              count=count+1;
+              console.log("price for iter 99="+sortedArray[99].price);
+              console.log("price for iter 98="+sortedArray[98].price);
+              console.log("price for iter 97="+sortedArray[97].price);
+              console.log("sum for iter "+i+"="+sum);
+              console.log("budget for iter "+i+"="+budget);
+              if (sum<=budget && count<=quantity) {
+                /*budgetArr.push({"pname":data.results[i].productName,
+                                "brand":data.results[i].brandName,
+                                "productUrl":data.results[i].productUrl,
+                                "image":data.results[i].thumbnailImageUrl,
+                                "price":data.results[i].price})*/
+                budgetArr.push({"pname":sortedArray[i].productName,
+                                "brand":sortedArray[i].brandName,
+                                "productUrl":sortedArray[i].productUrl,
+                                "image":sortedArray[i].thumbnailImageUrl,
+                                "price":sortedArray[i].price})
+                  
+              }
+              else if(sum>budget || count>quantity){
+                break;
+
+              }
+
+            }
+              //create a wrapper div
+              var outerDiv=document.createElement("div");
+              outerDiv.setAttribute("id","wrapper");
+              document.getElementById("inner").appendChild(outerDiv);
+
+
+
+           for (var i = 0; i < budgetArr.length; i++) {
+          
+           var savedprice=budgetArr[i].price;
+           var image=budgetArr[i].image;
+           var name=budgetArr[i].pname;
+           var brand=budgetArr[i].brand;
+           var productUrl=budgetArr[i].productUrl;
+           //console.log(savedprice);
+           
+  
+            //display data
+              
+
+              var innerDiv=document.createElement("div");
+              innerDiv.setAttribute("class","col-lg-4");
+              innerDiv.setAttribute("id","columnH");
+
+              innerDiv.innerHTML='<img class="img-circle" src='+image+' alt="Generic placeholder image"><p>'+name+'</p><p>by-'+ brand+'</p><p>'+savedprice+'</p><p><a class="btn btn-default"'            
+                  + 'href='+productUrl+' target="_blank" role="button">BUY &raquo;</a></p>';
+              var innercss='<img class="img-circle" src='+image+' alt="Generic placeholder image"><h2>'+name+'</h2><p>by-'+ brand+'</p><p>'+savedprice+'</p><p><a class="btn btn-default"'            
+                  + 'href='+productUrl+' target="_blank" role="button">BUY &raquo;</a></p>';
+
+              document.getElementById("wrapper").appendChild(innerDiv);
+
+            //}//end if
+          }//end for
+
+
+          });//end getJSON
+       
+      }//end getProd
+
+//search for price = budget/quantity
+      function binarySearch(prodarr,searchElem){
+
+        console.log("inside");
+        var first=0;
+        var last=prodarr.length-1;
+       // console.log(last);
+
+        var mid=Math.floor((first+last)/2);
+        var costprice=prodarr[mid].price;
+        //console.log("before"+costprice);
+        var decimalIndex=costprice.indexOf(".");
+        costprice=costprice.slice(1,decimalIndex);
+        //console.log("after"+costprice)
+
+        while(costprice!=searchElem && first<last){
+
+         
+          if(searchElem<costprice){
+            last=mid-1;
+            
+          }
+          else if(searchElem>costprice){
+            first=mid+1;
+            
+          }
+
+          mid=Math.floor((first+last)/2);
+          costprice=prodarr[mid].price;
+          decimalIndex=costprice.indexOf(".");
+          costprice=costprice.slice(1,decimalIndex);
+        }//end of while
+
+
+
+        return mid;
+      }
+
+      //bubblesort
+
+      function bubbleSort(array){
+
+        var len=array.length;
+        var temp;
+        var a= new Array();
+        a=array;
+
+        /*convert the data into array of prices then sort
+        for (var i = 0; i < array.results.length; i++) {
+        var costpricei=array.results[i].price;
+        decimalIndex=costpricei.indexOf(".");
+        costpricei=costpricei.slice(1,decimalIndex);
+        a.push(costpricei);
+        };*/
+
+        //console.log(a);
+
+        for(var i=0;i<len;i++)
+          for(var j=i+1;j<len;j++){
+
+            var costpricei=a[i].price;
+            decimalIndex=costpricei.indexOf(".");
+            costpricei=costpricei.slice(1,decimalIndex);
+            //console.log("costi"+costpricei);
+
+            var costpricej=a[j].price;
+            decimalIndex=costpricej.indexOf(".");
+            costpricej=costpricej.slice(1,decimalIndex);
+
+                if(Number(costpricej)<Number(costpricei)){
+                  temp=a[i];
+                  a[i]=a[j];
+                  a[j]=temp;
+                }
+        }
+
+        return a;
+  
+        };//bubblesort ends
+        
+
+
+
+
+      
+
+
+    </script>
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">Gift Me</h3>
+              <ul class="nav masthead-nav">
+               <!-- <li class="active"><a href="#">Home</a></li>
+                <li><a href="#">Features</a></li>
+                <li><a href="#">Contact</a></li>-->
+                
+              </ul>
+            </div>
+          </div>
+
+          <div class="inner cover">
+            <h1 class="cover-heading">Lets Buy Some Gifts Today</h1>
+            <form class="form-inline" role="form">
+  <div class="form-group">
+    <label class="sr-only" for="quantity">Number</label>
+    <input type="number" class="form-control" id="quantity" placeholder="How many gifts i need to buy">
+  </div>
+  <div class="form-group">
+    <label class="sr-only" for="budget">Budget</label>
+    <input type="number" class="form-control" id="budget" placeholder="What is my budget">
+  </div>
+  
+  <button type="button" onclick="getProd()"  class="btn btn-default">Get Gifts</button>
+</form>
+
+
+
+
+<div class="contain" id="outer">
+      <div class="row" id="inner">
+      </div>
+
+</div><!--end of container-->
+
+
+            
+          </div>
+
+          
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    
+  </body>
+</html>
