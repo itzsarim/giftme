@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Sarim">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
     <title>Gift Me</title>
@@ -103,11 +103,7 @@
               console.log("sum for iter "+i+"="+sum);
               console.log("budget for iter "+i+"="+budget);
               if (sum<=budget && count<=quantity) {
-                /*budgetArr.push({"pname":data.results[i].productName,
-                                "brand":data.results[i].brandName,
-                                "productUrl":data.results[i].productUrl,
-                                "image":data.results[i].thumbnailImageUrl,
-                                "price":data.results[i].price})*/
+                
                 budgetArr.push({"pname":sortedArray[i].productName,
                                 "brand":sortedArray[i].brandName,
                                 "productUrl":sortedArray[i].productUrl,
@@ -207,15 +203,7 @@
         var a= new Array();
         a=array;
 
-        /*convert the data into array of prices then sort
-        for (var i = 0; i < array.results.length; i++) {
-        var costpricei=array.results[i].price;
-        decimalIndex=costpricei.indexOf(".");
-        costpricei=costpricei.slice(1,decimalIndex);
-        a.push(costpricei);
-        };*/
-
-        //console.log(a);
+        
 
         for(var i=0;i<len;i++)
           for(var j=i+1;j<len;j++){
